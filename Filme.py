@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 from random import randint
-from os import chdir, listdir, startfile, path
+from os import listdir, startfile
 import re
 
 def ver_imagens(lista, filme, ano):
@@ -22,16 +22,14 @@ def aleatorio(aux,tam):
     if len(aux) > tam:
       return -1
 
-cam_filme = 'E://Matheus/Filmes'
-cam_imagem = 'E:\Matheus\Imagens_Filmes'
+cam_filme = r'E://Matheus/Filmes'
+cam_imagem = r'E://Matheus/Imagens_Filmes'
 aux_aleatorio = []
-chdir(cam_filme)
-lista_filme = listdir()
+lista_filme = listdir(cam_filme)
 tam_filme = len(lista_filme) - 1
 filme = lista_filme[aleatorio(aux_aleatorio,tam_filme)]
 aux = re.split(r"[()]\s*",filme)
-chdir(cam_imagem)
-lista_imagens = listdir()
+lista_imagens = listdir(cam_imagem)
 imagem_filme = ver_imagens(lista_imagens, aux[0], aux[1])
 
 sg.theme('DarkTeal12')
@@ -54,28 +52,32 @@ layout = [
 ]
 
 janela = sg.Window('inicial', layout=layout, size=(600, 880))
-def filme():
+def inicio(filme=filme):
     while True:
         event, value = janela.read()
 
         if event == sg.WINDOW_CLOSED or event == 'SAIR':
+            janela.hide()
             break
+
         if event == 'GERAR':
             numero_aleatorio = aleatorio(aux_aleatorio,tam_filme)
             if numero_aleatorio == -1:
+                sg.popup('Todos os filmes já foram vistos')
                 aux_aleatorio.clear()
                 numero_aleatorio = 0
-                sg.popup('Todos os filmes já foram vistos')
+                aux_aleatorio.append(numero_aleatorio)
             filme = lista_filme[numero_aleatorio]
             aux = re.split(r"[()]\s*",filme)
             imagem_filme = ver_imagens(lista_imagens, aux[0], aux[1])
             janela.Element('titulo').Update(aux[0])
             janela.Element('ano').Update(aux[1])
             janela.Element('imagem').Update(filename=f'{cam_imagem}/{imagem_filme}', size=(600,550))
+
         if event == 'ASSISTIR':
             startfile(f'{cam_filme}/{filme}')
             break
             
 
 if __name__ == '__main__':
-    filme()
+    inicio()

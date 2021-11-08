@@ -13,18 +13,18 @@ layout = [
     [sg.T('')]
 ]
 
-janela = sg.Window('inicial', layout=layout, size=(250, 300))
+janela2 = sg.Window('inicial', layout=layout, size=(250, 300))
 
 while True:
-    event, value = janela.read()
+    event, value = janela2.read()
 
     if event == sg.WINDOW_CLOSED:
         break
     if event == 'ASSISTIR UM FILME ALEATÓRIO':
-        janela.hide()
-        Filme.filme()
+        janela2.hide()
+        abrir = Filme.inicio(Filme.filme)
         break
     if event == 'GERENCIAR OS FILMES':
-        janela.hide()
+        janela2.hide()
         Filmes.filmes()
         break
