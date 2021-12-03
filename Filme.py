@@ -9,7 +9,7 @@ def ver_imagens(lista, filme, ano):
         if imagem == 'ERRO.png':
             continue
         aux_imagem = re.split(r"[()]\s*",imagem)
-        if aux_imagem[0] == filme and aux_imagem[1] == ano:
+        if aux_imagem[0] == filme and aux_imagem[1] == ano and aux_imagem[2] == '.png':
             imagem_filme = imagem
     return imagem_filme
 
@@ -47,23 +47,27 @@ layout = [
     [sg.Image(filename=f'{cam_imagem}/{imagem_filme}', size=(600,550), key='imagem')],
     [sg.Frame('INFORMAÇÕES', layout_frame, size=(500,100),font=('Arial',15))],
     [sg.T('')],
-    [sg.Button('SAIR',size=(22, 3)),sg.Button('GERAR',size=(21, 3)),sg.Button('ASSISTIR',size=(22, 3))],
+    [sg.Button('VOLTAR',size=(22, 3)),sg.Button('GERAR',size=(21, 3)),sg.Button('ASSISTIR',size=(22, 3))],
     [sg.T('')]
 ]
 
 janela = sg.Window('inicial', layout=layout, size=(600, 880))
-def inicio(filme=filme):
+
+def inicio(filme=filme, verifica=False):
+    if verifica:
+        janela.un_hide()
+
     while True:
         event, value = janela.read()
 
-        if event == sg.WINDOW_CLOSED or event == 'SAIR':
+        if event == sg.WINDOW_CLOSED:
             janela.hide()
-            break
+            return False
 
         if event == 'GERAR':
             numero_aleatorio = aleatorio(aux_aleatorio,tam_filme)
             if numero_aleatorio == -1:
-                sg.popup('Todos os filmes já foram vistos')
+                sg.popup('Todos os filmes já foram vistos',font=('Arial',16))
                 aux_aleatorio.clear()
                 numero_aleatorio = 0
                 aux_aleatorio.append(numero_aleatorio)
@@ -76,8 +80,12 @@ def inicio(filme=filme):
 
         if event == 'ASSISTIR':
             startfile(f'{cam_filme}/{filme}')
-            break
+            return False
+        
+        if event == 'VOLTAR':
+            janela.hide()
+            return True
             
 
 if __name__ == '__main__':
-    inicio()
+    aux_funcao = inicio()
