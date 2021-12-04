@@ -88,4 +88,4 @@ def inicio(filme=filme, verifica=False):
             
 
 if __name__ == '__main__':
-    aux_funcao = inicio()
+    inicio()

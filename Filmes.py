@@ -1,9 +1,5 @@
 import PySimpleGUI as sg
 import AddFilme as add
-import sqlite3 as sql
-
-banco = sql.connect('filmes.db')
-cursor = banco.cursor()
 
 sg.theme('DarkTeal12')
 layout = [
@@ -51,4 +47,4 @@ def filmes(verifica_add=False):
             
 
 if __name__ == '__main__':
-    aux_funcao = filmes()
+    filmes()
