@@ -3,24 +3,29 @@ from random import randint
 from os import listdir, startfile
 import re
 
+
 def ver_imagens(lista, filme, ano):
     imagem_filme = 'ERRO.png'
     for imagem in lista:
         if imagem == 'ERRO.png':
             continue
+
         aux_imagem = re.split(r"[()]\s*",imagem)
+
         if aux_imagem[0] == filme and aux_imagem[1] == ano and aux_imagem[2] == '.png':
             imagem_filme = imagem
     return imagem_filme
 
+
 def aleatorio(aux,tam):
-  while True:
-    numero = randint(0,tam)
-    if not numero in aux:
-      aux.append(numero)
-      return numero
-    if len(aux) > tam:
-      return -1
+    while True:
+        numero = randint(0,tam)
+        if not numero in aux:
+            aux.append(numero)
+            return numero
+        if len(aux) > tam:
+            return -1
+
 
 cam_filme = r'E://Matheus/Filmes'
 cam_imagem = r'E://Matheus/Imagens_Filmes'
@@ -37,7 +42,7 @@ sg.theme('DarkTeal12')
 size = (30,3)
 
 layout_frame = [
-                [sg.Text(f'{aux[0]}', background_color='green', size=(90,3), key='titulo',font=('Arial',12))], 
+                [sg.Text(f'{aux[0]}', background_color='green', size=(90,3), key='titulo',font=('Arial',12))],
                 [sg.Text(f'{aux[1]}', background_color='green',size=size, key='ano',font=('Arial',12)),sg.Text('NOTA', background_color='green',size=size, font=('Arial',12))],
                 [sg.Text('GENÊRO', background_color='green', size=(90,3), font=('Arial',12))]
                 ]
@@ -53,6 +58,7 @@ layout = [
 
 janela = sg.Window('inicial', layout=layout, size=(600, 880))
 
+
 def inicio(filme=filme, verifica=False):
     if verifica:
         janela.un_hide()
@@ -61,7 +67,6 @@ def inicio(filme=filme, verifica=False):
         event, value = janela.read()
 
         if event == sg.WINDOW_CLOSED:
-            janela.hide()
             return False
 
         if event == 'GERAR':
@@ -81,11 +86,11 @@ def inicio(filme=filme, verifica=False):
         if event == 'ASSISTIR':
             startfile(f'{cam_filme}/{filme}')
             return False
-        
+
         if event == 'VOLTAR':
             janela.hide()
             return True
-            
+
 
 if __name__ == '__main__':
     inicio()

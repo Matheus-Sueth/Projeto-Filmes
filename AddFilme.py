@@ -7,7 +7,6 @@ sg.theme('DarkTeal12')
 
 cam_filme = r'E:/Matheus/Filmes'
 cam_imagem = r'E:/Matheus/Imagens_Filmes'
-aux_aleatorio = []
 lista_filme = listdir(cam_filme)
 lista_imagens = listdir(cam_imagem)
 
@@ -34,7 +33,7 @@ layout = [
     [sg.T('')]
 ]
 
-janela = sg.Window('ADICIONAR FILME', layout=layout, size=(950, 420))
+janela = sg.Window('ADICIONAR FILME', layout=layout, size=(950, 350))
 
 
 def arrumar_genero(genero_antigo):
@@ -67,7 +66,6 @@ def adicionar(verifica=False):
                     for valor in valores:
                         teste = f'{valor[0]} ({valor[1]}){valor[2]}'
                         if filme == teste:
-                            sg.popup(f'{filme} JÁ ESTÁ CADASTRADO', font=('Arial', 20))
                             break
                     else:
                         imagem = re.split(r"[/.]\s*",filme)
@@ -78,7 +76,7 @@ def adicionar(verifica=False):
                 else:
                     sg.popup('NÃO HÁ ATUALIZAÇÕES', font=('Arial', 20))
             except:
-                sg.popup('Erro ao Procurar Novos Filmes')
+                sg.popup('Erro ao Procurar Novos Filmes', font=('Arial', 20))
 
         if event == 'ADICIONAR':
             try:
@@ -117,6 +115,10 @@ def adicionar(verifica=False):
                     cursor.execute(f'INSERT INTO FILME VALUES({id},"{nome}",{ano},"{extensao}","{nota}","{genero}","{imagem}")')
                     banco.commit()
                     sg.popup('Adicionado')
+                    janela.Element('arquivo').Update('')
+                    janela.Element('imagem').Update('')
+                    janela.Element('nota').Update('')
+                    janela.Element('genero').Update('')
             except sql.Error as erro:
                 sg.popup(erro)
             except:

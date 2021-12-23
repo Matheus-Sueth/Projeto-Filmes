@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import AddFilme as add
+import ReadFilme as read
 
 sg.theme('DarkTeal12')
 layout = [
@@ -18,7 +19,8 @@ layout = [
 
 janela = sg.Window('CRUD', layout=layout, size=(250, 500))
 
-def filmes(verifica_add=False):
+
+def filmes(verifica_add=False,verifica_read=False):
     if verifica_add:
         janela.un_hide()
         
@@ -28,7 +30,7 @@ def filmes(verifica_add=False):
         if event == sg.WINDOW_CLOSED:
             return False
         
-        if event == 'VER FILME' or event == 'ALTERAR FILME' or event == 'DELETAR FILME':
+        if event == 'ALTERAR FILME' or event == 'DELETAR FILME':
             sg.popup('Desculpe estamos em manutenção', font=('Arial',20))
             
         if event == 'ADICIONAR FILME':
@@ -38,13 +40,19 @@ def filmes(verifica_add=False):
                 verifica_add = True
             else:
                 return False
-                
-                
+
+        if event == 'VER FILME':
+            janela.hide()
+            if read.ler(verifica_read):
+                janela.un_hide()
+                verifica_read = True
+            else:
+                return False
+
         if event == 'VOLTAR':
             janela.hide()
             return True
-            
-            
+
 
 if __name__ == '__main__':
     filmes()
