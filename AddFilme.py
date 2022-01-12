@@ -1,7 +1,8 @@
 import PySimpleGUI as sg
 import sqlite3 as sql
-from os import listdir
+from os import listdir, remove
 import re
+from PIL import Image
 
 sg.theme('DarkTeal12')
 
@@ -9,10 +10,9 @@ cam_filme = r'E:/Matheus/Filmes'
 cam_imagem = r'E:/Matheus/Imagens_Filmes'
 lista_filme = listdir(cam_filme)
 lista_imagens = listdir(cam_imagem)
-
 size_text, size_input = (10,1), (70,1)
 font_text = ('Arial',16)
-lista = ['PÉSSIMO', 'RUIM DEMAIS', 'RUIM', 'MAIS OU MENOS', 'BOM', 'MUITO BOM', 'EXCELENTE']
+lista = ['NÃO ASSISTIDO','PÉSSIMO', 'RUIM DEMAIS', 'RUIM', 'MAIS OU MENOS', 'BOM', 'MUITO BOM', 'EXCELENTE']
 banco = sql.connect('filmes.db')
 cursor = banco.cursor()
 
@@ -34,6 +34,37 @@ layout = [
 ]
 
 janela = sg.Window('ADICIONAR FILME', layout=layout, size=(950, 350))
+
+
+def formatar_imagem(caminho):
+    i = 1
+    cont = 0
+    lista = ['.jpeg', '.jpg', '.png', '.jfif']
+    while True:
+        if caminho[-i] == '.':
+            try:
+                aux_caminho = caminho[:-i] + lista[cont]
+                im = Image.open(aux_caminho)
+                break
+            except:
+                cont += 1
+                if cont == 10:
+                    return None
+        else:
+            i += 1
+    im.thumbnail((600, 550), Image.ANTIALIAS)
+    caminho = aux_caminho
+    if not caminho in '.png':
+        i = 1
+        while True:
+            if caminho[-i] == '.':
+                aux_caminho = caminho[:-i] + '.png'
+                break
+            else:
+                i += 1
+    im.save(aux_caminho, 'PNG')
+    remove(caminho)
+    return aux_caminho
 
 
 def arrumar_genero(genero_antigo):
@@ -71,6 +102,14 @@ def adicionar(verifica=False):
                         imagem = re.split(r"[/.]\s*",filme)
                         janela.Element('arquivo').Update(f'{cam_filme}/{filme}')
                         janela.Element('imagem').Update(f'{cam_imagem}/{imagem[0]}.png')
+                        aux_imagem = imagem[0]
+                        for imagens in lista_imagens:
+                            imagem = re.split(r"[/.]\s*", imagens)
+                            aux_imagem2 = imagem[0]
+                            if aux_imagem == aux_imagem2:
+                                sg.popup(f'Já existe uma imagem salva do filme {aux_imagem2}')
+                        else:
+                            sg.popup (f'Não existe uma imagem salva do filme {aux_imagem}')
                         #sg.popup(f'{filme} DEVE SER CADASTRADO', font=('Arial', 20))
                         break
                 else:
@@ -93,7 +132,8 @@ def adicionar(verifica=False):
                     continue
 
                 aux_filme = re.split(r"[/()]\s*",value['arquivo'])
-                aux_imagem = re.split(r"[/]\s*",value['imagem'])
+                aux_imagem = formatar_imagem(value['imagem'])
+                aux_imagem = re.split(r"[/]\s*",aux_imagem)
                 nome = aux_filme[3].strip()
                 ano = int(aux_filme[4])
                 extensao = aux_filme[5].strip()
@@ -121,8 +161,10 @@ def adicionar(verifica=False):
                     janela.Element('genero').Update('')
             except sql.Error as erro:
                 sg.popup(erro)
-            except:
-                sg.popup('ERRO\nVERIQUE SE TODOS OS CAMPOS ESTÃO CORRETOS', font=('Arial',20))
+            except FileNotFoundError as erro2:
+                sg.popup(f'ERRO\nNÃO FOI ACHADO O ARQUIVO, {erro2}', font=('Arial', 20))
+            except (RuntimeError, TypeError, NameError) as erro3:
+                sg.popup(f'ERRO\nVERIQUE SE TODOS OS CAMPOS ESTÃO CORRETOS, {erro3}', font=('Arial',20))
 
 
 if __name__ == '__main__':
