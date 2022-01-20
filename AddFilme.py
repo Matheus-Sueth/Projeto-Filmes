@@ -3,11 +3,12 @@ import sqlite3 as sql
 from os import listdir, remove
 import re
 from PIL import Image
+import Pastas
 
 sg.theme('DarkTeal12')
 
-cam_filme = r'E:/Matheus/Filmes'
-cam_imagem = r'E:/Matheus/Imagens_Filmes'
+cam_filme = Pastas.cam_filme
+cam_imagem = Pastas.cam_imagem
 lista_filme = listdir(cam_filme)
 lista_imagens = listdir(cam_imagem)
 size_text, size_input = (10,1), (70,1)
@@ -108,6 +109,7 @@ def adicionar(verifica=False):
                             aux_imagem2 = imagem[0]
                             if aux_imagem == aux_imagem2:
                                 sg.popup(f'Já existe uma imagem salva do filme {aux_imagem2}')
+                                break
                         else:
                             sg.popup (f'Não existe uma imagem salva do filme {aux_imagem}')
                         #sg.popup(f'{filme} DEVE SER CADASTRADO', font=('Arial', 20))

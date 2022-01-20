@@ -1,12 +1,14 @@
 import PySimpleGUI as sg
 import sqlite3 as sql
 from os import startfile
+from PIL import Image
+import Pastas
 
 
 sg.theme('DarkTeal12')
 
-cam_filme = r'E:/Matheus/Filmes'
-cam_imagem = r'E:/Matheus/Imagens_Filmes'
+cam_filme = Pastas.cam_filme
+cam_imagem = Pastas.cam_imagem
 
 size_text, size_input = (10,1), (70,1)
 font_text = ('Arial',16)
@@ -16,7 +18,7 @@ banco = sql.connect('filmes.db')
 cursor = banco.cursor()
 cursor.execute('SELECT * FROM FILME')
 valores = cursor.fetchall()
-valores_nm = [nome[1] for nome in valores]
+valores_nm = [nome[1]+'___'+nome[2] for nome in valores]
 size = (30,3)
 
 layout_frame = [
@@ -42,6 +44,13 @@ layout = [
 janela = sg.Window('inicial', layout=layout, size=(600, 1050))
 
 
+def formatar_imagem(caminho):
+    im = Image.open(caminho)
+    im.thumbnail((600, 550), Image.ANTIALIAS)
+    im.save(caminho, 'PNG')
+    return caminho
+
+
 def banco_dados(banco_de_dados):
     cursor_banco = banco_de_dados.cursor()
     cursor_banco.execute('SELECT * FROM FILME')
@@ -62,28 +71,29 @@ def ler(verifica=False):
         else:
             cursor.execute('SELECT * FROM FILME')
             resultado = cursor.fetchall()
-            janela.Element('tam').Update(f'TOTAL DE FILMES = {len (resultado)}')
+            janela.Element('tam').Update(f'TOTAL DE FILMES = {len(resultado)}')
 
         if event == 'VISUALIZAR':
             try:
                 if value['filmes'] == '':
                     sg.popup('ERRO\nNÃO FOI SELECIONADO NENHUM FILME', font=('Arial', 20))
                 else:
-                    cursor.execute(f'SELECT * FROM FILME WHERE NOME == "{value["filmes"][0]}"')
+                    aux = value["filmes"][0].split('___')
+                    cursor.execute(f'SELECT * FROM FILME WHERE NOME == "{aux[0]}" AND ANO == {aux[1]}')
                     resultados = cursor.fetchall()
                     janela.Element('titulo').Update(f'\n{resultados[0][1]}')
                     janela.Element('ano').Update(f'\n{resultados[0][2]}')
                     janela.Element('nota').Update(f'\n{resultados[0][4]}')
                     janela.Element('genero').Update(f'\n{resultados[0][5]}')
-                    janela.Element('imagem').Update(filename=f'{cam_imagem}/{resultados[0][6]}', size=(600, 550))
-            except (RuntimeError, TypeError, NameError, FileNotFoundError) as erro2:
+                    janela.Element('imagem').Update(filename=formatar_imagem(f'{cam_imagem}/{resultados[0][6]}'), size=(600, 550))
+            except (RuntimeError, TypeError, NameError, FileNotFoundError, IndexError) as erro2:
                 sg.popup(f'ERRO\nACIONE O ADMINISTRADOR, {erro2}', font=('Arial', 20))
 
         if event == 'ASSISTIR':
             try:
                 startfile(f'{cam_filme}/{resultados[0][1]} ({resultados[0][2]}){resultados[0][3]}')
                 return False
-            except (RuntimeError, TypeError, NameError, FileNotFoundError) as erro2:
+            except (RuntimeError, TypeError, NameError, FileNotFoundError, IndexError) as erro2:
                 sg.popup(f'ERRO\nACIONE O ADMINISTRADOR, {erro2}', font=('Arial', 20))
 
         if event == 'VOLTAR':
@@ -95,7 +105,7 @@ def ler(verifica=False):
                 if value["campo_filtro"] == '' and value["nome_filtro"] == '':
                     cursor.execute('SELECT * FROM FILME')
                     resultados = cursor.fetchall()
-                    nomes = [nome[1] for nome in resultados]
+                    nomes = [nome[1]+'___'+nome[2] for nome in resultados]
                     janela.Element('filmes').Update(nomes)
                     janela.Element('retorno').Update('FILMES RETORNADOS = ?')
                 elif value["campo_filtro"] == '' or value["nome_filtro"] == '':
@@ -114,12 +124,12 @@ def ler(verifica=False):
                         cursor.execute(f'SELECT * FROM FILME WHERE NOTA LIKE "%{value["nome_filtro"]}%"')
 
                     resultados = cursor.fetchall()
-                    nomes = [nome[1] for nome in resultados]
+                    nomes = [nome[1]+'___'+nome[2] for nome in resultados]
                     janela.Element('filmes').Update(nomes)
                     janela.Element('retorno').Update(f'FILMES RETORNADOS = {len(resultados)}')
             except sql.Error as erro:
                 sg.popup(erro)
-            except (RuntimeError, TypeError, NameError,FileNotFoundError) as erro2:
+            except (RuntimeError, TypeError, NameError, FileNotFoundError, IndexError) as erro2:
                 sg.popup(f'ERRO\nACIONE O ADMINISTRADOR, {erro2}', font=('Arial', 20))
                 janela.Element('filmes').Update(valores_nm)
                 janela.Element('retorno').Update('FILMES RETORNADOS = ?')

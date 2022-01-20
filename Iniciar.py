@@ -2,7 +2,9 @@ import PySimpleGUI as sg
 import Filme
 import Filmes
 
+
 sg.theme('DarkTeal12')
+
 layout = [
     [sg.T('')],
     [sg.Text('MEUS FILMES', justification='center',size=(100,2), font=('Arial',22))],
