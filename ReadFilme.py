@@ -14,9 +14,8 @@ size_text, size_input = (10,1), (70,1)
 font_text = ('Arial',16)
 lista = ['NÃO ASSISTIDO','PÉSSIMO', 'RUIM DEMAIS', 'RUIM', 'MAIS OU MENOS', 'BOM', 'MUITO BOM', 'EXCELENTE']
 lista2 = ['','NOME','ANO','NOTA','GENÊRO']
-banco = sql.connect('filmes.db')
-cursor = banco.cursor()
-cursor.execute('SELECT * FROM FILME')
+cursor = Pastas.cursor
+cursor.execute('SELECT * FROM FILME ORDER BY NOME, ANO')
 valores = cursor.fetchall()
 valores_nm = [nome[1]+'___'+nome[2] for nome in valores]
 size = (30,3)
@@ -51,12 +50,6 @@ def formatar_imagem(caminho):
     return caminho
 
 
-def banco_dados(banco_de_dados):
-    cursor_banco = banco_de_dados.cursor()
-    cursor_banco.execute('SELECT * FROM FILME')
-    return cursor_banco.fetchall()
-
-
 def ler(verifica=False):
     global resultados
     if verifica:
@@ -69,7 +62,7 @@ def ler(verifica=False):
         if event == sg.WINDOW_CLOSED:
             return False
         else:
-            cursor.execute('SELECT * FROM FILME')
+            cursor.execute('SELECT * FROM FILME ORDER BY NOME, ANO')
             resultado = cursor.fetchall()
             janela.Element('tam').Update(f'TOTAL DE FILMES = {len(resultado)}')
 
@@ -103,7 +96,7 @@ def ler(verifica=False):
         if event == 'FILTRAR':
             try:
                 if value["campo_filtro"] == '' and value["nome_filtro"] == '':
-                    cursor.execute('SELECT * FROM FILME')
+                    cursor.execute('SELECT * FROM FILME ORDER BY NOME, ANO')
                     resultados = cursor.fetchall()
                     nomes = [nome[1]+'___'+nome[2] for nome in resultados]
                     janela.Element('filmes').Update(nomes)
@@ -121,7 +114,7 @@ def ler(verifica=False):
                     elif value["campo_filtro"] == 'GENÊRO':
                         cursor.execute(f'SELECT * FROM FILME WHERE GENÊRO LIKE "%{value["nome_filtro"]}%"')
                     elif value["campo_filtro"] == 'NOTA':
-                        cursor.execute(f'SELECT * FROM FILME WHERE NOTA LIKE "%{value["nome_filtro"]}%"')
+                        cursor.execute(f'SELECT * FROM FILME WHERE NOTA LIKE "%{value["nome_filtro"].upper()}%"')
 
                     resultados = cursor.fetchall()
                     nomes = [nome[1]+'___'+nome[2] for nome in resultados]

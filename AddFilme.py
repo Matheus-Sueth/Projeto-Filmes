@@ -14,8 +14,8 @@ lista_imagens = listdir(cam_imagem)
 size_text, size_input = (10,1), (70,1)
 font_text = ('Arial',16)
 lista = ['NÃO ASSISTIDO','PÉSSIMO', 'RUIM DEMAIS', 'RUIM', 'MAIS OU MENOS', 'BOM', 'MUITO BOM', 'EXCELENTE']
-banco = sql.connect('filmes.db')
-cursor = banco.cursor()
+banco = Pastas.banco
+cursor = Pastas.cursor
 
 layout = [
     [sg.FileBrowse('FILME:', button_color='green', size=size_text,font=font_text),
@@ -40,11 +40,11 @@ janela = sg.Window('ADICIONAR FILME', layout=layout, size=(950, 350))
 def formatar_imagem(caminho):
     i = 1
     cont = 0
-    lista = ['.jpeg', '.jpg', '.png', '.jfif']
+    extensoes = ['.jpeg', '.jpg', '.png', '.jfif']
     while True:
         if caminho[-i] == '.':
             try:
-                aux_caminho = caminho[:-i] + lista[cont]
+                aux_caminho = caminho[:-i] + extensoes[cont]
                 im = Image.open(aux_caminho)
                 break
             except:
@@ -111,7 +111,7 @@ def adicionar(verifica=False):
                                 sg.popup(f'Já existe uma imagem salva do filme {aux_imagem2}')
                                 break
                         else:
-                            sg.popup (f'Não existe uma imagem salva do filme {aux_imagem}')
+                            sg.popup(f'Não existe uma imagem salva do filme {aux_imagem}')
                         #sg.popup(f'{filme} DEVE SER CADASTRADO', font=('Arial', 20))
                         break
                 else:
