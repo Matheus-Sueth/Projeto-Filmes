@@ -3,6 +3,20 @@ from os import listdir
 import sqlite3 as sql
 from os.path import exists
 
+sg.theme('DarkTeal12')
+
+
+def formata_string(texto):
+    aux = set()
+    for i in range(len(texto)):
+        try:
+            aux.add(texto.index('.', i, len(texto)))
+        except:
+            break
+    aux = list(aux)
+    aux.sort(reverse=True)
+    return aux[0]
+
 
 def caminhos():
     caminho_filme = ''
@@ -49,7 +63,20 @@ try:
 except:
     cam_filme, cam_imagem = caminhos()
 
-caminho_banco = r'E://Matheus/Arquivos/Linguagens/PYTHON/Projetos/Projeto-Filme/filme.db'
+lista_imagem = [imagem[:formata_string(imagem) - len(imagem)] for imagem in listdir(cam_imagem)]
+for imagem in lista_imagem:
+    contador = lista_imagem.count(imagem)
+    if contador > 1:
+        sg.popup(f'Na pasta {imagem} existe {contador} arquivos com o mesmo nome {imagem}, remova os arquivos em excesso', font=('Arial', 20), title='ATENÇÃO')
+        exit()
+lista_filme = [filme[:formata_string(filme) - len(filme)] for filme in listdir(cam_filme)]
+for filme in lista_filme:
+    contador = lista_filme.count(filme)
+    if contador > 1:
+        sg.popup(f'Na pasta {cam_filme} existe {contador} arquivos com o mesmo nome {filme}, remova os arquivos em excesso', font=('Arial', 20), title='ATENÇÃO')
+        exit()
+
+caminho_banco = r'E://Matheus/Arquivos/Linguagens/PYTHON/Projetos/Projeto-Filme/filmes.db'
 if exists(caminho_banco):
     banco = sql.connect(caminho_banco)
     cursor = banco.cursor()
@@ -63,7 +90,6 @@ if exists(caminho_banco):
         if None in lista_filme[id]:
             sg.popup(f'Problema com banco de dados, no id = {id}', font=('Arial', 20), title='ERRO')
             exit()
-
 
 else:
     cont= 0

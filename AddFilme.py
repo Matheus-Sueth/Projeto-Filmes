@@ -38,24 +38,29 @@ janela = sg.Window('ADICIONAR FILME', layout=layout, size=(950, 350))
 
 
 def formatar_imagem(caminho):
-    i = 1
-    cont = 0
-    extensoes = ['.jpeg', '.jpg', '.png', '.jfif']
-    while True:
-        if caminho[-i] == '.':
-            try:
-                aux_caminho = caminho[:-i] + extensoes[cont]
-                im = Image.open(aux_caminho)
-                break
-            except:
-                cont += 1
-                if cont == 10:
-                    return None
-        else:
-            i += 1
-    im.thumbnail((600, 550), Image.ANTIALIAS)
-    caminho = aux_caminho
-    if not caminho in '.png':
+    try:
+        im = Image.open(caminho)
+        im.thumbnail((600, 550), Image.ANTIALIAS)
+        im.save(caminho, 'PNG')
+        return caminho
+    except:
+        i = 1
+        cont = 0
+        extensoes = ['.jpeg', '.jpg', '.jfif']
+        while True:
+            if caminho[-i] == '.':
+                try:
+                    aux_caminho = caminho[:-i] + extensoes[cont]
+                    im = Image.open(aux_caminho)
+                    break
+                except:
+                    cont += 1
+                    if cont == 10:
+                        return None
+            else:
+                i += 1
+        im.thumbnail((600, 550), Image.ANTIALIAS)
+        caminho = aux_caminho
         i = 1
         while True:
             if caminho[-i] == '.':
@@ -63,16 +68,9 @@ def formatar_imagem(caminho):
                 break
             else:
                 i += 1
-    im.save(aux_caminho, 'PNG')
-    remove(caminho)
-    return aux_caminho
-
-
-def arrumar_genero(genero_antigo):
-    aux_genero = re.split(r"[/]\s*", genero_antigo)
-    aux_genero = [palavra.capitalize() for palavra in aux_genero]
-    genero_arrumado = '/'.join(aux_genero)
-    return genero_arrumado
+        im.save(aux_caminho, 'PNG')
+        remove(caminho)
+        return aux_caminho
 
 
 def adicionar(verifica=False):
@@ -93,19 +91,19 @@ def adicionar(verifica=False):
             try:
                 cursor.execute('SELECT NOME,ANO,EXTENSÃO,IMAGEM FROM FILME')
                 valores = cursor.fetchall()
-
+                lista_filme = listdir(cam_filme)
                 for filme in lista_filme:
                     for valor in valores:
-                        teste = f'{valor[0]} ({valor[1]}){valor[2]}'
-                        if filme == teste:
+                        aux_filme = f'{valor[0]} ({valor[1]}){valor[2]}'
+                        if filme == aux_filme:
                             break
                     else:
-                        imagem = re.split(r"[/.]\s*",filme)
+                        imagem = re.split(r"[/)]\s*",filme)
                         janela.Element('arquivo').Update(f'{cam_filme}/{filme}')
-                        janela.Element('imagem').Update(f'{cam_imagem}/{imagem[0]}.png')
-                        aux_imagem = imagem[0]
+                        janela.Element('imagem').Update(f'{cam_imagem}/{imagem[0]}).png')
+                        aux_imagem = imagem[0]+').png'
                         for imagens in lista_imagens:
-                            imagem = re.split(r"[/.]\s*", imagens)
+                            imagem = re.split(r"[/]\s*", imagens)
                             aux_imagem2 = imagem[0]
                             if aux_imagem == aux_imagem2:
                                 sg.popup(f'Já existe uma imagem salva do filme {aux_imagem2}')
@@ -136,18 +134,18 @@ def adicionar(verifica=False):
                 aux_filme = re.split(r"[/()]\s*",value['arquivo'])
                 aux_imagem = formatar_imagem(value['imagem'])
                 aux_imagem = re.split(r"[/]\s*",aux_imagem)
-                nome = aux_filme[3].strip()
-                ano = int(aux_filme[4])
-                extensao = aux_filme[5].strip()
+                nome = aux_filme[-3].strip()
+                ano = int(aux_filme[-2])
+                extensao = aux_filme[-1].strip()
                 nota = value['nota']
-                genero = str(value['genero']).capitalize()
-                imagem = aux_imagem[3]
+                genero = ''.join(char.replace(char, '/') if not char.isalnum() and not '/' == char else char for char in value['genero'])
+                imagem = aux_imagem[-1]
                 cursor.execute('SELECT NOME,ANO FROM FILME')
                 valores = cursor.fetchall()
                 id = len(valores)+1
 
                 if '/' in genero:
-                    genero = arrumar_genero(genero)
+                    genero = genero.title()
 
                 for filme in valores:
                     if filme[0].strip() == nome and int(filme[1]) == ano:

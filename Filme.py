@@ -37,7 +37,7 @@ banco = Pastas.banco
 cursor = Pastas.cursor
 cursor.execute('SELECT * FROM FILME ORDER BY NOME, ANO')
 lista_filme = cursor.fetchall()
-tam_filme = len(lista_filme)
+tam_filme = len(lista_filme)-1
 sg.theme('DarkTeal12')
 size = (30,3)
 
@@ -105,9 +105,7 @@ def inicio(filme=filme, verifica=False):
             if numero_aleatorio == -1:
                 sg.popup('Todos os filmes já foram vistos',font=('Arial',16),title='ALERTA')
                 aux_aleatorio.clear()
-                numero_aleatorio = 0
-                aux_aleatorio.append(numero_aleatorio)
-            filme = lista_filme[numero_aleatorio]
+            filme = lista_filme[aleatorio(aux_aleatorio, tam_filme)]
             imagem_filme = filme[6]
             janela.Element('titulo').Update(f'\n{filme[1]}')
             janela.Element('ano').Update(f'\n{filme[2]}')

@@ -28,7 +28,7 @@ layout_frame = [
 
 
 layout = [
-    [sg.Input(f'TOTAL DE FILMES = {len(valores)}',size=(21, 3), justification='center', disabled=True, key='tam'), sg.T(' '*55), sg.Input(f'FILMES RETORNADOS = ?', key='retorno',justification='center', size=(25, 3), disabled=True)],
+    [sg.Input(f'TOTAL DE FILMES = {len(valores)}',size=(22, 3), justification='center', disabled=True, key='tam'), sg.T(' '*55), sg.Input(f'FILMES RETORNADOS = ?', key='retorno',justification='center', size=(25, 3), disabled=True)],
     [sg.T('')],
     [sg.Input('', key='nome_filtro', size=(40,2)),sg.Combo(lista2, key='campo_filtro', size=(10,1)),sg.Button('FILTRAR', size=(20,2))],
     [sg.T('')],
@@ -40,7 +40,7 @@ layout = [
     [sg.T('')]
 ]
 
-janela = sg.Window('inicial', layout=layout, size=(600, 1050))
+janela = sg.Window('inicial', layout=layout, size=(600, 1080))
 
 
 def formatar_imagem(caminho):
